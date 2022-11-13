@@ -11,11 +11,23 @@ export default () => {
     });
 
     app.post("/save_vpcs", async (request: Request, response: Response) => {
-        response.json(await saveVpcsService(request, response));
+        try {
+            response.json(await saveVpcsService(request));
+        } catch (error: any) {
+            if(error.Code == "AuthFailure"){
+                response.status(401).send("AuthFailure");
+            }
+        }
     });
 
     app.post("/save_subnets", async (request: Request, response: Response) => {
-        response.json(await saveSubnetService(request, response));
+        try {
+            response.json(await saveSubnetService(request));
+        } catch (error: any) {
+            if(error.Code == "AuthFailure"){
+                response.status(401).send("AuthFailure");
+            }
+        }
     })
 
     return app;

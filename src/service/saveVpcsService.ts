@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { Request } from 'express'
 import {SaveVpcSubnetRequest} from "../types/dto/saveVpcSubnetRequest";
 import {DescribeVpcsCommand} from "@aws-sdk/client-ec2";
 import { DescribeVpcsCommandOutput } from "@aws-sdk/client-ec2/dist-types/commands";
@@ -12,7 +12,7 @@ import {ModelStatic} from "sequelize";
 import {createEC2Client} from "./ec2Service";
 import {SaveVpcSubnetResponse} from "../types/dto/saveVpcSubnetResponse";
 
-export default async (request: Request, response: Response) => {
+export default async (request: Request) => {
     const requestBody: SaveVpcSubnetRequest = request.body;
 
     const client = createEC2Client(requestBody);
@@ -21,26 +21,21 @@ export default async (request: Request, response: Response) => {
     let data: DescribeVpcsCommandOutput;
     let vpcs: Vpc[] | undefined;
     let nextToken: string | undefined = undefined;
-    try {
-        do {
-            input = (nextToken == undefined) ? {} : {NextToken: nextToken};
-            command = new DescribeVpcsCommand({});
-            data = await client.send(command);
 
-            vpcs = data.Vpcs;
-            nextToken = data.NextToken;
+    do {
+        input = (nextToken == undefined) ? {} : {NextToken: nextToken};
+        command = new DescribeVpcsCommand({});
+        data = await client.send(command);
 
-            if (vpcs != undefined) {
-                vpcs.forEach((vpc) => {
-                    insertVpc(vpc, requestBody.region);
-                });
-            }
-        } while (nextToken != undefined)
-    } catch (error: any) {
-        if(error.Code == "AuthFailure"){
-            response.status(401).send("AuthFailure")
+        vpcs = data.Vpcs;
+        nextToken = data.NextToken;
+
+        if (vpcs != undefined) {
+            vpcs.forEach((vpc) => {
+                insertVpc(vpc, requestBody.region);
+            });
         }
-    }
+    } while (nextToken != undefined)
 
     const msg: SaveVpcSubnetResponse = {
         status: 200,

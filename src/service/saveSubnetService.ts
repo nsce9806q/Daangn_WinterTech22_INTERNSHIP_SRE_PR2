@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import {Request} from "express";
 import {SaveVpcSubnetRequest} from "../types/dto/saveVpcSubnetRequest";
 import {DescribeSubnetsCommand} from "@aws-sdk/client-ec2";
 import {DescribeSubnetsCommandOutput} from "@aws-sdk/client-ec2/dist-types/commands";
@@ -11,7 +11,7 @@ import db from "../model";
 import {createEC2Client} from "./ec2Service";
 import {SaveVpcSubnetResponse} from "../types/dto/saveVpcSubnetResponse";
 
-export default async (request: Request, response: Response) => {
+export default async (request: Request) => {
     const requestBody: SaveVpcSubnetRequest = request.body;
 
     const client = createEC2Client(requestBody);
@@ -20,27 +20,21 @@ export default async (request: Request, response: Response) => {
     let data: DescribeSubnetsCommandOutput;
     let subnets: Subnet[] | undefined;
     let nextToken: string | undefined = undefined;
-    try {
-        do {
-            input = (nextToken == undefined) ? {} : {NextToken: nextToken};
-            command = new DescribeSubnetsCommand(input);
-            data = await client.send(command);
 
-            subnets = data.Subnets;
-            nextToken = data.NextToken;
+    do {
+        input = (nextToken == undefined) ? {} : {NextToken: nextToken};
+        command = new DescribeSubnetsCommand(input);
+        data = await client.send(command);
 
-            if (subnets != undefined) {
-                subnets.forEach((subnet) => {
-                    insertSubnet(subnet, requestBody.region);
-                });
-            }
-        } while (nextToken != undefined)
+        subnets = data.Subnets;
+        nextToken = data.NextToken;
 
-    } catch (error: any) {
-        if(error.Code == "AuthFailure"){
-            response.status(401).send("AuthFailure")
+        if (subnets != undefined) {
+            subnets.forEach((subnet) => {
+                insertSubnet(subnet, requestBody.region);
+            });
         }
-    }
+    } while (nextToken != undefined)
 
     const msg: SaveVpcSubnetResponse = {
         status: 200,
