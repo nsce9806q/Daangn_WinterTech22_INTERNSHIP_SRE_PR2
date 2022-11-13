@@ -6,9 +6,9 @@ import Tags from "./tags";
 import Subnet from "./subnet";
 import SubnetIpv6CidrBlockAssociation from "./subnetIpv6CidrBlockAssociation";
 
-const sequelize = new Sequelize("test", 'root', 'pass1234', {
-    host: 'localhost',
-    port: 3306,
+const sequelize = new Sequelize(String(process.env.MYSQL_DB), String(process.env.MYSQL_USER), String(process.env.MYSQL_PASSWORD), {
+    host: process.env.MYSQL_HOST,
+    port: Number(process.env.MYSQL_PORT),
     dialect: "mysql"
 });
 

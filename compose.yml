@@ -1,0 +1,30 @@
+version: "3.7"
+
+services:
+  api-server:
+    image: node:18.12.1-alpine3.16
+    command: sh -c " cd home && npm i && npx tsc && npm run \"build & run\""
+    ports: ["3000:3000"]
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: pass1234
+      MYSQL_DB: daangn
+      MYSQL_PORT: 3306
+    depends_on:
+      - mysql
+    volumes:
+      - .:/home
+
+  mysql:
+    image: mysql:8.0.31
+#    ports: ["3306:3306"]
+    environment:
+      MYSQL_ROOT_PASSWORD: pass1234
+      TZ: Asia/Seoul
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+
+
+
+
