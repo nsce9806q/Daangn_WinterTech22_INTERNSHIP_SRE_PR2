@@ -12,6 +12,10 @@ import {ModelStatic} from "sequelize";
 import {createEC2Client} from "./ec2Service";
 import {SaveVpcSubnetResponse} from "../types/dto/saveVpcSubnetResponse";
 
+/**
+ * vpc 정보 저장
+ * @param request apikey + secret + region
+ */
 export default async (request: Request) => {
     const requestBody: SaveVpcSubnetRequest = request.body;
 
@@ -22,6 +26,7 @@ export default async (request: Request) => {
     let vpcs: Vpc[] | undefined;
     let nextToken: string | undefined = undefined;
 
+    // nextToken 없을 때 까지 반복
     do {
         input = (nextToken == undefined) ? {} : {NextToken: nextToken};
         command = new DescribeVpcsCommand({});
@@ -45,6 +50,11 @@ export default async (request: Request) => {
     return msg;
 }
 
+/**
+ * vpc와 자식 관계 데이터 Insert, 이미 존재 시 하위 데이터 모두 삭제 후 Insert
+ * @param vpc vpc
+ * @param region region
+ */
 const insertVpc = async (vpc: Vpc, region: string) => {
     const includeStatement: ModelStatic<any>[] = [];
     if(vpc.Ipv6CidrBlockAssociationSet != undefined && vpc.Ipv6CidrBlockAssociationSet.length != 0){

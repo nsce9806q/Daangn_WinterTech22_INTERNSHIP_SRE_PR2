@@ -11,6 +11,10 @@ import db from "../model";
 import {createEC2Client} from "./ec2Service";
 import {SaveVpcSubnetResponse} from "../types/dto/saveVpcSubnetResponse";
 
+/**
+ * subnet 정보 저장
+ * @param request apikey + secret + region
+ */
 export default async (request: Request) => {
     const requestBody: SaveVpcSubnetRequest = request.body;
 
@@ -21,6 +25,7 @@ export default async (request: Request) => {
     let subnets: Subnet[] | undefined;
     let nextToken: string | undefined = undefined;
 
+    // nextToken 없을 때 까지 반복
     do {
         input = (nextToken == undefined) ? {} : {NextToken: nextToken};
         command = new DescribeSubnetsCommand(input);
@@ -44,14 +49,17 @@ export default async (request: Request) => {
     return msg;
 }
 
+/**
+ * subnet 과 자식 관계 데이터 Insert, 이미 존재 시 하위 데이터 모두 삭제 후 Insert
+ * @param subnet subnet
+ * @param region region
+ */
 const insertSubnet = async (subnet: Subnet, region: string) => {
     const includeStatement: ModelStatic<any>[] = [];
     if(subnet.Ipv6CidrBlockAssociationSet != undefined && subnet.Ipv6CidrBlockAssociationSet.length != 0) {
         includeStatement.push(db.SubnetIpv6CidrBlock);
     }
     if(subnet.Tags != undefined && subnet.Tags.length != 0) includeStatement.push(db.Tags);
-
-    console.log(includeStatement);
 
     await db.Subnet.create(subnetToEntity(subnet, region), {include: includeStatement})
         .catch((error) => {
