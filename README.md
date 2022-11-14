@@ -119,10 +119,10 @@ const insertVpc = async (vpc: Vpc, region: string) => {
 }
 
 // Response body entity 형태로 변환
-const vpcToEntity = (vpc: Vpc, region: string) => {...}
-const vpcIpv6CidrBlockToEntity = (vpcIpv6CidrBlockSet: VpcIpv6CidrBlockAssociation[] | undefined) => {...}
-const vpcCidrBlockToEntity = (vpcCidrBlockSet: VpcCidrBlockAssociation[] | undefined) => {...}
-const tagsToEntity = (tags: Tag[] | undefined) => {...}
+const vpcToEntity = (vpc: Vpc, region: string) => {/*...*/}
+const vpcIpv6CidrBlockToEntity = (vpcIpv6CidrBlockSet: VpcIpv6CidrBlockAssociation[] | undefined) => {/*...*/}
+const vpcCidrBlockToEntity = (vpcCidrBlockSet: VpcCidrBlockAssociation[] | undefined) => {/*...*/}
+const tagsToEntity = (tags: Tag[] | undefined) => {/*...*/}
 ```
 1. 위에서 작성한 EC2-Client 생성 함수를 통해 EC2-Client 생성
 2. 모든 VPC정보를 조회 할 수 있도록 input 설정을 통한 필터링은 하지 않음
@@ -182,10 +182,9 @@ const insertSubnet = async (subnet: Subnet, region: string) => {
         );
 }
 
-const subnetToEntity = (subnet: Subnet, region: string) => {...}
-const subnetIpv6CidrBlockAssociationToEntity = (subnetIpv6CidrBlockSet: SubnetIpv6CidrBlockAssociation[] | undefined) => {...}
-const tagsToEntity = (tags: Tag[] | undefined) => {...}
-}
+const subnetToEntity = (subnet: Subnet, region: string) => {/*...*/}
+const subnetIpv6CidrBlockAssociationToEntity = (subnetIpv6CidrBlockSet: SubnetIpv6CidrBlockAssociation[] | undefined) => {/*...*/}
+const tagsToEntity = (tags: Tag[] | undefined) => {/*...*/}
 ```
 1. 위에서 작성한 EC2-Client 생성 함수를 통해 EC2-Client 생성
 2. 모든 Subnet 정보를 조회 할 수 있도록 input 설정을 통한 필터링은 하지 않음
@@ -203,9 +202,9 @@ AWS 특정 계정과 리전의 모든 VPC 정보를 조회하여 DB에 저장한
 | region          | string | AWS 리전                |
 ```json
 {
-  "accessKeyId": string,
-  "secretAccessKey": string,
-  "region": string
+  "accessKeyId": "string",
+  "secretAccessKey": "string",
+  "region": "string"
 }
 ```
 #### Response Body
@@ -230,9 +229,9 @@ AWS 특정 계정과 리전의 모든 Subnet 정보를 조회하여 DB에 저장
 | region          | string | AWS 리전                |
 ```json
 {
-  "accessKeyId": string,
-  "secretAccessKey": string,
-  "region": string
+  "accessKeyId": "string",
+  "secretAccessKey": "string",
+  "region": "string"
 }
 ```
 #### Response Body
